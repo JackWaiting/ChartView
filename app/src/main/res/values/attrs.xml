@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyCharView">
+        <attr name="cv_red" format="color"></attr>
+        <attr name="cv_green" format="color"></attr>
+        <attr name="cv_yellow" format="color"></attr>
+        <attr name="cv_row" format="color"></attr>
+        <attr name="cv_col" format="color"></attr>
+    </declare-styleable>
+</resources>
