@@ -228,3 +228,91 @@ public class CharView extends View {
     }
 }
 ```
+
+#Update
+Describe：Add onTouch event, optimize the onDraw code.
+
+Design images ：
+![](https://github.com/JackWaiting/ChartView/blob/master/images/chart_onTouch.png)  
+
+View Code:
+```
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        drawCharts(canvas);
+        if(mSpot >= 0 && mSpot <= 30){
+             if(mLifeTimeStartY[mSpot] >=mTopPadding +mRowHeight+mRowLineWidth &&mLifeTimeStartY[mSpot] <=mTopPadding +5*(mRowHeight+mRowLineWidth)){
+                drawTouchData(canvas,greenPaint);
+            }
+            else if(mLifeTimeStartY[mSpot] >=mTopPadding +5*(mRowHeight+mRowLineWidth) &&mLifeTimeStartY[mSpot] <=mTopPadding +6*(mRowHeight+mRowLineWidth)){
+                drawTouchData(canvas,yellowPaint);
+            }
+            else{
+                drawTouchData(canvas,redPaint);
+             }
+        }
+
+    }
+    
+        @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if(ignoreTouch(event.getX(),event.getY())){
+                    mSpot = getTouchSpot(event.getX());
+                    Log.i("进来了","ACTION_DOWN已处理"+mSpot);
+//                    setPressed(true);
+                   invalidate();
+                    return true;
+                }
+                else{
+                    mSpot =-1;
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+//                setPressed(false);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+//                setPressed(false);
+
+                break;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+
+    //根据点击的范围获取到当前点击的点
+    private int  getTouchSpot(float x) {
+        int index = 0;
+        for (int i = 0;i<mLifeTimeStartX.length;i++){
+            if(x>mLifeTimeStartX[i]-mColWidth/2 && x<mLifeTimeEndX[i] -mColWidth/2){
+                index = i;
+            }
+        }
+        return index;
+    }
+
+
+    //判断当前点击的范围是否需要处理
+    private boolean ignoreTouch(float x , float y) {
+        boolean ignore = false;
+        if((x>=(mLeftPadding-mColWidth/2) &&x <=(mRowEndX+mColWidth/2))&&(y>=mTopPadding-mColWidth/2 && y<=mColEndY+mColWidth/2) ){
+            ignore = true;
+        }
+        return  ignore;
+    }
+
+
+    //点击Touch后给出每个点的具体数据
+    private void drawTouchData(Canvas canvas,Paint paint) {
+        canvas.drawRect(mLifeTimeStartX[mSpot]-mRowTipWidth/2, mLifeTimeStartY[mSpot]-100-mRowTipHeight/2,mLifeTimeStartX[mSpot]+mRowTipWidth/2, mLifeTimeStartY[mSpot]+mRowTipHeight/2-100, paint);  // 矩形
+        canvas.drawText(lifeTimeData[mSpot]+"",mLifeTimeStartX[mSpot]-mRowTipWidth/2+20, mLifeTimeStartY[mSpot]-80,mColTextPaint);  //查看任意一点的信息
+    }
+
+
+```
