@@ -10,6 +10,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -39,6 +41,7 @@ public class CharView extends View {
     private int mCircleRadius = 20;
     private PathEffect effects;
     private int mRowTipWidth =150,mRowTipHeight = 60;
+    private int mSpot = -1;  //-1表示点上面的数据无需绘制，
 
     public CharView(Context context) {
         super(context);
@@ -80,6 +83,8 @@ public class CharView extends View {
         mColLinePaint.setStrokeWidth(mColLineWidth);
         mColLinePaint.setStyle(Paint.Style. STROKE);
         mColLinePaint.setAntiAlias( true);
+
+        mColLinePaint.setPathEffect(effects);
         redPaint = new Paint();
         redPaint.setColor(a.getColor(R.styleable.MyCharView_cv_red,getResources().getColor(R.color.red)));
         redPaint.setStrokeWidth(PixelUtil.dp2px(2, getContext()));
@@ -91,14 +96,33 @@ public class CharView extends View {
         yellowPaint.setStrokeWidth(PixelUtil.dp2px(2, getContext()));
 
         mColTextPaint = new Paint();
-        mColTextPaint.setColor(a.getColor(R.styleable.MyCharView_cv_row,Color.WHITE));
+        mColTextPaint.setColor(a.getColor(R.styleable.MyCharView_cv_row,Color.BLACK));
         mColTextPaint.setTextSize(50);
     }
 
 
     @Override
     protected void onDraw(Canvas canvas) {
+        Log.i("进来了","onDraw");
         super.onDraw(canvas);
+        drawCharts(canvas);
+        if(mSpot >= 0 && mSpot <= 30){
+             if(mLifeTimeStartY[mSpot] >=mTopPadding +mRowHeight+mRowLineWidth &&mLifeTimeStartY[mSpot] <=mTopPadding +5*(mRowHeight+mRowLineWidth)){
+                drawTouchData(canvas,greenPaint);
+            }
+            else if(mLifeTimeStartY[mSpot] >=mTopPadding +5*(mRowHeight+mRowLineWidth) &&mLifeTimeStartY[mSpot] <=mTopPadding +6*(mRowHeight+mRowLineWidth)){
+                drawTouchData(canvas,yellowPaint);
+            }
+            else{
+                drawTouchData(canvas,redPaint);
+             }
+        }
+
+
+
+    }
+
+    private void drawCharts(Canvas canvas) {
         for (int i= 0;i<mColYs.length;i++){
             if(i%5==0){
                 canvas.drawLine(mColYs[i], mColStartY, mColYs[i],mColEndY, mRowLinePaint);
@@ -106,10 +130,10 @@ public class CharView extends View {
             }
             else{
                 //canvas.drawLine(mColYs[i], mColStartY, mColYs[i],mColEndY, mColLinePaint);
+                path.reset();
                 path.moveTo(mColYs[i], mColStartY);
                 path.lineTo(mColYs[i],mColEndY);
-                mColLinePaint.setPathEffect(effects);
-                canvas.drawPath(path, mColLinePaint);
+                 canvas.drawPath(path, mColLinePaint);
             }
         }
 
@@ -144,6 +168,7 @@ public class CharView extends View {
         }
         //最后一点无法循环到，手动赋值
         canvas.drawCircle(mLifeTimeStartX[30],mLifeTimeStartY[30], mCircleRadius,redPaint);
+
         for(int i=0;i< mRowYs.length;i++){
 
             if(i==0 ||i==2 ||i == 3 ||i == 7){
@@ -153,8 +178,14 @@ public class CharView extends View {
                 canvas.drawRect(0, mRowYs[i]-mRowTipHeight/2,mRowTipWidth, mRowYs[i]+mRowTipHeight/2, mRowLinePaint);  // 矩形
                 canvas.drawText(mRowTipData[i]+"",20, mRowYs[i]+20,mColTextPaint);  //给每个矩形进行参数赋值
             }
-
         }
+    }
+
+
+    //点击Touch后给出每个点的具体数据
+    private void drawTouchData(Canvas canvas,Paint paint) {
+        canvas.drawRect(mLifeTimeStartX[mSpot]-mRowTipWidth/2, mLifeTimeStartY[mSpot]-100-mRowTipHeight/2,mLifeTimeStartX[mSpot]+mRowTipWidth/2, mLifeTimeStartY[mSpot]+mRowTipHeight/2-100, paint);  // 矩形
+        canvas.drawText(lifeTimeData[mSpot]+"",mLifeTimeStartX[mSpot]-mRowTipWidth/2+20, mLifeTimeStartY[mSpot]-80,mColTextPaint);  //查看任意一点的信息
     }
 
 
@@ -163,10 +194,64 @@ public class CharView extends View {
         if(i%5==0){
             canvas.drawCircle(mLifeTimeStartX[i],mLifeTimeStartY[i], mCircleRadius,paint);
         }
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if(ignoreTouch(event.getX(),event.getY())){
+                    mSpot = getTouchSpot(event.getX());
+                    Log.i("进来了","ACTION_DOWN已处理"+mSpot);
+//                    setPressed(true);
+                   invalidate();
+                    return true;
+                }
+                else{
+                    mSpot =-1;
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+//                setPressed(false);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+//                setPressed(false);
+
+                break;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+
+    //根据点击的范围获取到当前点击的点
+    private int  getTouchSpot(float x) {
+        int index = 0;
+        for (int i = 0;i<mLifeTimeStartX.length;i++){
+            if(x>mLifeTimeStartX[i]-mColWidth/2 && x<mLifeTimeEndX[i] -mColWidth/2){
+                index = i;
+            }
+        }
+        return index;
+    }
+
+
+    //判断当前点击的范围是否需要处理
+    private boolean ignoreTouch(float x , float y) {
+        boolean ignore = false;
+        if((x>=(mLeftPadding-mColWidth/2) &&x <=(mRowEndX+mColWidth/2))&&(y>=mTopPadding-mColWidth/2 && y<=mColEndY+mColWidth/2) ){
+            ignore = true;
+        }
+        return  ignore;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        Log.i("进来了","onSizeChanged");
         int viewWidth = w - mLeftPadding - mRightPadding;
         int viewHeight = h - mTopPadding - mBottomPadding - mFontHeight - mFontTopMargin;
         mColTextHeight = h - mTopPadding  - mFontTopMargin;
