@@ -3,13 +3,19 @@ package retrofit.jackwaiting.jackwaiting_chars;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
-import android.graphics.Xfermode;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -109,6 +115,11 @@ public class CharView extends View {
         mRowTextPaint = new Paint();
         mRowTextPaint.setColor(a.getColor(R.styleable.MyCharView_cv_row, Color.WHITE));
         mRowTextPaint.setTextSize(PixelUtil.dp2px(16, getContext()));
+
+
+        mColorBgPaint = new Paint();
+        mColorBgPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mColorBgPaint.setAntiAlias(true);
     }
 
 
@@ -147,7 +158,81 @@ public class CharView extends View {
             canvas.drawLine(mRowStartX, mRowYs[i], mRowEndX, mRowYs[i], mRowLinePaint);
         }
 
-        for (int i = 0; i < lifeTimeData.length - 1; i++) {
+        //drawCurve(canvas);
+        drawBeautifulCurve(canvas);
+
+        for (int i = 0; i < mRowYs.length; i++) {
+
+            if (i == 0 || i == 2 || i == 3 || i == 7) {
+                continue;
+            } else {
+                canvas.drawRect(0, mRowYs[i] - mRowTipHeight / 2, mRowTipWidth, mRowYs[i] + mRowTipHeight / 2, mRowLinePaint);  // 矩形
+                canvas.drawText(mRowTipData[i] + "", PixelUtil.dp2px(5, getContext()), mRowYs[i] + PixelUtil.dp2px(5, getContext()), mColTextPaint);  //给每个矩形进行参数赋值
+            }
+        }
+    }
+
+    // 绘制渲染后的曲线图
+    private void drawBeautifulCurve(Canvas canvas) {
+        if (mCurveBitmap == null) {
+            mCurveBitmap = getBeautfulCurve();
+        }
+        canvas.drawBitmap(mCurveBitmap, 0, 0, null);
+    }
+
+    private Rect mColorBgRect;
+    private Paint mColorBgPaint;
+    private Bitmap getBeautfulCurve() {
+        // 绘制一个渲染的背景
+        Bitmap tagBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas tagCanvas = new Canvas(tagBitmap);
+        tagCanvas.drawRect(mColorBgRect, mColorBgPaint);
+       // 绘制弧形
+        Bitmap curveBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas curveCanvas = new Canvas(curveBitmap);
+        drawCurve(curveCanvas);
+        Paint paint = new Paint();
+        // 设置合成模式
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+        tagCanvas.drawBitmap(curveBitmap, mMatrix, paint);
+        return tagBitmap;
+    }
+
+    // 渲染背景笔
+    public void shaderColorBgPaint(Rect rect) {
+        LinearGradient linearGradient = new LinearGradient(rect.left, rect.top, rect.left, rect.bottom, getShaderColor(), getShaderPosition(), Shader.TileMode.MIRROR);
+        mColorBgPaint.setShader(linearGradient);
+    }
+
+    // 将正常理解的颜色@COLORS_SHADER转换为LinearGradient绘制所需的颜色
+    public int[] getShaderColor(){
+        int[] colors = new int[COLORS_SHADER.length * 2];
+        for (int i = 0, len = colors.length; i < len ; i+=2) {
+            colors[i] = COLORS_SHADER[i/2];
+            colors[i+1] = COLORS_SHADER[i/2];
+        }
+        return colors;
+    }
+
+    // 将正常理解的比例@RATIOS_SHADER转换为LinearGradient绘制所需的比例
+    public float[] getShaderPosition() {
+        float[] position = new float[COLORS_SHADER.length * 2];
+        position[0] = JOIN_SHADER;
+        position[1] = RATIOS_SHADER[0] - JOIN_SHADER;
+        for (int i = 1, len = RATIOS_SHADER.length; i < len ; i++) {
+            position[i*2] = RATIOS_SHADER[i-1] + JOIN_SHADER;
+            position[i*2+1] = RATIOS_SHADER[i] - JOIN_SHADER;
+        }
+        return position;
+    }
+
+    final int[] COLORS_SHADER = new int[]{Color.RED, Color.GREEN, Color.YELLOW, Color.RED}; // 背景颜色过渡
+    final float[] RATIOS_SHADER = new float[]{1/7f, 5/7f, 6/7f, 1f};    // 颜色所占的比
+    final float JOIN_SHADER = 1/7f / 10 * 2;    // 两个颜色之间的融合高度所占的比
+    private Matrix mMatrix = new Matrix();
+    private Bitmap mCurveBitmap;
+    private void drawCurve(Canvas canvas) {
+       /* for (int i = 0; i < lifeTimeData.length - 1; i++) {
             if (lifeTimeData[i] > mOneRowTip) {
                 canvas.drawLine(mLifeTimeStartX[i], mLifeTimeStartY[i], mLifeTimeEndX[i], mLifeTimeEndY[i], redPaint);
                 drawCircleView(i, redPaint, canvas);
@@ -166,19 +251,13 @@ public class CharView extends View {
             } else {
                 canvas.drawLine(mLifeTimeStartX[i], mLifeTimeStartY[i], mLifeTimeEndX[i], mLifeTimeEndY[i], redPaint);
             }
+        }*/
+        for (int i = 0; i < lifeTimeData.length - 1; i++) {
+            canvas.drawLine(mLifeTimeStartX[i], mLifeTimeStartY[i], mLifeTimeEndX[i], mLifeTimeEndY[i], redPaint);
+            drawCircleView(i, redPaint, canvas);
         }
         //最后一点无法循环到，手动赋值
         canvas.drawCircle(mLifeTimeStartX[30], mLifeTimeStartY[30], mCircleRadius, redPaint);
-
-        for (int i = 0; i < mRowYs.length; i++) {
-
-            if (i == 0 || i == 2 || i == 3 || i == 7) {
-                continue;
-            } else {
-                canvas.drawRect(0, mRowYs[i] - mRowTipHeight / 2, mRowTipWidth, mRowYs[i] + mRowTipHeight / 2, mRowLinePaint);  // 矩形
-                canvas.drawText(mRowTipData[i] + "", PixelUtil.dp2px(5, getContext()), mRowYs[i] + PixelUtil.dp2px(5, getContext()), mColTextPaint);  //给每个矩形进行参数赋值
-            }
-        }
     }
 
 
@@ -287,6 +366,12 @@ public class CharView extends View {
             mLifeTimeEndX[i] = mLeftPadding + mColWidth + mColLineWidth + i * (mColWidth + mColLineWidth);
         }
         getLifeTime();
+
+        // 初始化渲染背景的Rect，并初始化mColorBgPaint的Shader
+//        mColorBgRect = new Rect(mLeftPadding, mTopPadding, mRowEndX, mColEndY);
+        mColorBgRect = new Rect(0, mTopPadding, w, mColEndY);
+        shaderColorBgPaint(mColorBgRect);
+
     }
 
     //获取每个点进行连接
