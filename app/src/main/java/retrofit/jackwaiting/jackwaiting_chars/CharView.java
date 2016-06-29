@@ -41,7 +41,7 @@ public class CharView extends View {
     private int mLifeTimeWidth;
     private float lifeTimeHeight;  //由于高度的精确度比较高，建议使用float
     private float mLifeTimeStartX[], mLifeTimeEndX[], mLifeTimeStartY[], mLifeTimeEndY[];
-    private float mMaxLifeTimeData = 10f, mOneRowTip = 7.45f, mTwoRowTip = 6.34f, mThreeRowTip = 6.18f, mFourRowTip = 5.97f;
+    private float mMaxLifeTimeData = 8f, mOneRowTip = 7.45f, mTwoRowTip = 6.34f, mThreeRowTip = 6.18f, mFourRowTip = 5.97f;
     private float mRowTipData[] = new float[]{0f, 7.45f, 0f, 0f, 6.34f, 6.18f, 5.97f, 0f}; //不显示则用0f表示
     private String[] chars = new String[]{"0", "5", "10", "15", "20", "25", "30"};
     private Path path;
