@@ -49,6 +49,12 @@ public class CharView extends View {
     private PathEffect effects;
     private int mRowTipWidth, mRowTipHeight;
     private int mSpot = -1;  //-1表示点上面的数据无需绘制，
+    final int[] COLORS_SHADER = new int[]{Color.RED, Color.GREEN, Color.YELLOW, Color.RED}; // 背景颜色过渡
+    final float[] RATIOS_SHADER = new float[]{1/7f, 5/7f, 6/7f, 1f};    // 颜色所占的比
+    final float JOIN_SHADER = 1/7f / 10 * 2;    // 两个颜色之间的融合高度所占的比
+    private Matrix mMatrix = new Matrix();
+    private Bitmap mCurveBitmap;
+
 
     public CharView(Context context) {
         super(context);
@@ -225,12 +231,6 @@ public class CharView extends View {
         }
         return position;
     }
-
-    final int[] COLORS_SHADER = new int[]{Color.RED, Color.GREEN, Color.YELLOW, Color.RED}; // 背景颜色过渡
-    final float[] RATIOS_SHADER = new float[]{1/7f, 5/7f, 6/7f, 1f};    // 颜色所占的比
-    final float JOIN_SHADER = 1/7f / 10 * 2;    // 两个颜色之间的融合高度所占的比
-    private Matrix mMatrix = new Matrix();
-    private Bitmap mCurveBitmap;
     private void drawCurve(Canvas canvas) {
        /* for (int i = 0; i < lifeTimeData.length - 1; i++) {
             if (lifeTimeData[i] > mOneRowTip) {
