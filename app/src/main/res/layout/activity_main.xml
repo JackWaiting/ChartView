@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     android:id="@+id/root"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/img_bg"
-    tools:context="retrofit.jackwaiting.jackwaiting_chars.MainActivity">
+    android:orientation="vertical"
+  >
 
-    <retrofit.jackwaiting.jackwaiting_chars.CharView
-        android:id="@+id/mCharView"
+    <Button
+        android:id="@+id/btn_chart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/material_deep_teal_200"
+        android:text="ChartView"/>
 
-</RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_rule_circle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/material_deep_teal_200"
+        android:text="RuleCircleView"/>
+
+</LinearLayout>

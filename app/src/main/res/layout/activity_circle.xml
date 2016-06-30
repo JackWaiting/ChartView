@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/img_bg"
+    android:orientation="vertical"
+    >
+
+
+
+    <TextView
+        android:id="@+id/mRandomNum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        />
+
+    <retrofit.jackwaiting.jackwaiting_chars.view.RuleCircleView
+        android:id="@+id/mRuleCircleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+       />
+</LinearLayout>

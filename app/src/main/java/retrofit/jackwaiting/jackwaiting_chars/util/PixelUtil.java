@@ -1,4 +1,4 @@
-package retrofit.jackwaiting.jackwaiting_chars;
+package retrofit.jackwaiting.jackwaiting_chars.util;
 
 import android.content.Context;
 import android.content.res.Resources;

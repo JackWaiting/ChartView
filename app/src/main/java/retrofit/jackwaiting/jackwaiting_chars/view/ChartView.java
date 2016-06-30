@@ -1,4 +1,4 @@
-package retrofit.jackwaiting.jackwaiting_chars;
+package retrofit.jackwaiting.jackwaiting_chars.view;
 
 
 import android.content.Context;
@@ -21,10 +21,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import retrofit.jackwaiting.jackwaiting_chars.R;
+import retrofit.jackwaiting.jackwaiting_chars.util.PixelUtil;
+
 /**
  * Created by JackWaiting on 2016/6/24.
  */
-public class CharView extends View {
+public class ChartView extends View {
 
     private Paint mRowLinePaint, mColLinePaint;  //横线、竖线的画笔
     private Paint redPaint, greenPaint, yellowPaint;
@@ -56,17 +59,17 @@ public class CharView extends View {
     private Bitmap mCurveBitmap;
 
 
-    public CharView(Context context) {
+    public ChartView(Context context) {
         super(context);
         init(context, null, 0);
     }
 
-    public CharView(Context context, AttributeSet attrs) {
+    public ChartView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, null, 0);
     }
 
-    public CharView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ChartView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
@@ -193,7 +196,7 @@ public class CharView extends View {
         Bitmap tagBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas tagCanvas = new Canvas(tagBitmap);
         tagCanvas.drawRect(mColorBgRect, mColorBgPaint);
-       // 绘制弧形
+       // 绘制曲线
         Bitmap curveBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas curveCanvas = new Canvas(curveBitmap);
         drawCurve(curveCanvas);
