@@ -26,6 +26,9 @@ public class RuleCircleView extends View {
     private float mNum6VData = 0; //数据
     private float mDegrees = 0; //指针角度
     private float mScale = 0.7f;  //缩放比例
+    private float mFirstPoint = 0, mSecondPoint = 5.97f, mThirdPoint = 6.18f, mFourthPoint = 6.43f, mFifthPoint = 6.94f, mSixthPoint = 7.45f, mMaxPoint = 10;  //每个区间的关键点
+    private int  mFristMaxDegrees = 270,mSecondMaxDegrees = 300,mThirdMaxDegrees = 330,mFourthMaxDegrees = 30,mFifthMaxDegrees = 90,mSixthMaxDegrees = 135;  //每个区间点的最大角度
+    private float mFristDegrees  = 45,mSecondDegrees= 30,mThirdDegrees = 30,mFourthDegrees = 60,mFifthDegrees = 60,mSixthDegrees = 45;  //每个区间的角度范围
 
     public RuleCircleView(Context context) {
         super(context);
@@ -77,20 +80,19 @@ public class RuleCircleView extends View {
         canvas.drawBitmap(mNum6VBitmap, mSrcRect,mDstRect, null);
     }
 
-    private float mFirstPoint = 0, mSecondPoint = 5.97f, mThirdPoint = 6.18f, mFourthPoint = 6.43f, mFifthPoint = 6.94f, mSixthPoint = 7.45f, mMaxPoint = 10;
     //把用户给的值换算成角度
     private float getDegrees(float mNum6VData) {
         if(mNum6VData>=mFirstPoint &&mNum6VData<=mSecondPoint){
-            return 270 - ((mSecondPoint-mNum6VData)/mSecondPoint)*45f;
+            return mFristMaxDegrees - ((mSecondPoint-mNum6VData)/mSecondPoint)*mFristDegrees;
         }
         else if(mNum6VData>mSecondPoint &&mNum6VData<=mThirdPoint){
-            return 300 - ((mThirdPoint-mNum6VData)/(mThirdPoint-mSecondPoint))*30f;
+            return mSecondMaxDegrees - ((mThirdPoint-mNum6VData)/(mThirdPoint-mSecondPoint))*mSecondDegrees;
         }
         else if(mNum6VData>mThirdPoint &&mNum6VData<=mFourthPoint){
-            return 330 - ((mFourthPoint-mNum6VData)/(mFourthPoint-mThirdPoint))*30f;
+            return mThirdMaxDegrees - ((mFourthPoint-mNum6VData)/(mFourthPoint-mThirdPoint))*mThirdDegrees;
         }
         else if(mNum6VData>mFourthPoint &&mNum6VData<=mFifthPoint){
-            float flagNum = 30 - ((mFifthPoint-mNum6VData)/(mFifthPoint-mFourthPoint))*60f;
+            float flagNum = mFourthMaxDegrees - ((mFifthPoint-mNum6VData)/(mFifthPoint-mFourthPoint))*mFourthDegrees;
             //如果是负数，换算成对应的正数
             if(flagNum<0){
                 flagNum = 360+flagNum;
@@ -98,10 +100,10 @@ public class RuleCircleView extends View {
             return flagNum;
         }
         else if(mNum6VData>mFifthPoint &&mNum6VData<=mSixthPoint){
-            return 90 - ((mSixthPoint-mNum6VData)/(mSixthPoint-mFifthPoint))*60f;
+            return mFifthMaxDegrees - ((mSixthPoint-mNum6VData)/(mSixthPoint-mFifthPoint))*mFifthDegrees;
         }
         else if(mNum6VData>mSixthPoint &&mNum6VData<=mMaxPoint){
-            return 135 - ((mMaxPoint-mNum6VData)/(mMaxPoint-mSixthPoint))*45f;
+            return mSixthMaxDegrees - ((mMaxPoint-mNum6VData)/(mMaxPoint-mSixthPoint))*mSixthDegrees;
         }
         return 0;
     }
