@@ -10,7 +10,8 @@ import retrofit.jackwaiting.jackwaiting_chars.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private Button btnChart,btnRuleCircle;
+    private Button btnChart,btnRuleCircle,btnDisplayView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +23,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         btnChart = (Button) findViewById(R.id.btn_chart);
         btnRuleCircle = (Button) findViewById(R.id.btn_rule_circle);
+        btnDisplayView = (Button) findViewById(R.id.btn_display_circle);
         btnChart.setOnClickListener(this);
         btnRuleCircle.setOnClickListener(this);
+        btnDisplayView.setOnClickListener(this);
     }
 
     @Override
@@ -34,6 +37,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_rule_circle :
                 startActivity(new Intent(MainActivity.this,RuleCircleActivity.class));
+                break;
+            case R.id.btn_display_circle :
+                startActivity(new Intent(MainActivity.this,DisplayActivity.class));
                 break;
         }
 

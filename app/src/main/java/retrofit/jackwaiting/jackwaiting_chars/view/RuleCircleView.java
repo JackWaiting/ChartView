@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import retrofit.jackwaiting.jackwaiting_chars.R;
@@ -29,6 +30,7 @@ public class RuleCircleView extends View {
     private float mFirstPoint = 0, mSecondPoint = 5.97f, mThirdPoint = 6.18f, mFourthPoint = 6.43f, mFifthPoint = 6.94f, mSixthPoint = 7.45f, mMaxPoint = 10;  //每个区间的关键点
     private int  mFristMaxDegrees = 270,mSecondMaxDegrees = 300,mThirdMaxDegrees = 330,mFourthMaxDegrees = 30,mFifthMaxDegrees = 90,mSixthMaxDegrees = 135;  //每个区间点的最大角度
     private float mFristDegrees  = 45,mSecondDegrees= 30,mThirdDegrees = 30,mFourthDegrees = 60,mFifthDegrees = 60,mSixthDegrees = 45;  //每个区间的角度范围
+    private int mViewBackGround;
 
     public RuleCircleView(Context context) {
         super(context);
@@ -45,23 +47,29 @@ public class RuleCircleView extends View {
         init();
     }
 
+    public void setViewBackGround(int viewId){
+        Log.i("进来了", "setViewBackGround");
+        mViewBackGround = viewId;
+        mNum6VBitmap= BitmapFactory.decodeResource(getResources(), mViewBackGround);
+    }
+
     //初始化
     private void init() {
+        Log.i("进来了","init");
         mLeftPadding = PixelUtil.dp2px(10, getContext());
         mTopPadding = PixelUtil.dp2px(10, getContext());
         mRightPadding = PixelUtil.dp2px(10, getContext());
         mBottomPadding = PixelUtil.dp2px(10, getContext());
-        mRadius = PixelUtil.dp2px(150, getContext());
-        mNum6VBitmap= BitmapFactory.decodeResource(getResources(), R.mipmap.img_num_6v);
+        //mRadius = PixelUtil.dp2px(150, getContext());
         mNumPointer = BitmapFactory.decodeResource(getResources(), R.mipmap.img_num_pointer);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        Log.i("进来了","onDraw");
         super.onDraw(canvas);
         drawBitMapBackGround(canvas);
         drawBitMapPointer(canvas);
-
     }
 
     //描绘指针
@@ -77,7 +85,9 @@ public class RuleCircleView extends View {
 
     //描绘背景图
     private void drawBitMapBackGround(Canvas canvas) {
-        canvas.drawBitmap(mNum6VBitmap, mSrcRect,mDstRect, null);
+        if(mNum6VBitmap!=null){
+            canvas.drawBitmap(mNum6VBitmap, mSrcRect,mDstRect, null);
+        }
     }
 
     //把用户给的值换算成角度
@@ -110,17 +120,21 @@ public class RuleCircleView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        Log.i("进来了", "onSizeChanged");
         super.onSizeChanged(w, h, oldw, oldh);
-        mRectFWidth = w - mLeftPadding - mRightPadding;
-        mRectFHeight = h  - mTopPadding - mBottomPadding;
-        mSrcRect = new Rect(0, 0,mNum6VBitmap.getWidth(), mNum6VBitmap.getHeight());// BitMap源区域
+        mRectFWidth = w ;
+        mRectFHeight = h;
+        mRadius = mRectFWidth/2;
+        if(mNum6VBitmap!=null){
+            mSrcRect = new Rect(0, 0,mNum6VBitmap.getWidth(), mNum6VBitmap.getHeight());// BitMap源区域
+        }
+
         mDstRect = new Rect((int)(mRectFWidth/2-mRadius),(int) (mRectFHeight/2-mRadius),(int)(mRectFWidth/2+mRadius), (int)(mRectFHeight/2+mRadius));// BitMap目标区域
         mPointMatrix = new Matrix();
         mDegrees= getDegrees(mNum6VData);
-        mPointMatrix.postRotate(mDegrees, mNumPointer.getWidth()/2,mNumPointer.getHeight()*12/13);
-        mPointMatrix.postScale(mScale,mScale);
-        mPointMatrix.postTranslate(mRectFWidth/2-mNumPointer.getWidth()/2*mScale,getHeight()/2 - mNumPointer.getHeight()*mScale);
+        mPointMatrix.postRotate(mDegrees, mNumPointer.getWidth() / 2, mNumPointer.getHeight() * 12 / 13);
+        //mPointMatrix.postScale(mScale,mScale);
+        mPointMatrix.postTranslate(mRectFWidth/2-mNumPointer.getWidth()/2,getHeight()/2 - mNumPointer.getHeight()*12/13);
     }
-
 
 }

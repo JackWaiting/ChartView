@@ -16,7 +16,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.ChartActivity" />
-        <activity android:name=".activity.RuleCircleActivity"></activity>
+        <activity android:name=".activity.RuleCircleActivity" />
+        <activity android:name=".activity.DisplayActivity"></activity>
     </application>
 
 </manifest>

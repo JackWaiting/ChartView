@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/img_bg"
@@ -8,18 +8,19 @@
 
 
 
-    <TextView
-        android:id="@+id/mRandomNum"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:gravity="center"
-        android:textColor="@android:color/white"
-        />
-
     <retrofit.jackwaiting.jackwaiting_chars.view.RuleCircleView
         android:id="@+id/mRuleCircleView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-       />
-</LinearLayout>
+         />
+
+    <TextView
+        android:id="@+id/mRandomNum"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="#2bdbda"
+        android:paddingTop="200dp"
+        android:text="dasdas"
+        android:textSize="25sp" />
+</RelativeLayout>
