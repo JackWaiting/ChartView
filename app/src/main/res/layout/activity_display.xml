@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/img_bg"
+   >
+
+
+    <retrofit.jackwaiting.jackwaiting_chars.view.DisPlayCircleView
+        android:id="@+id/mDisPlayCircleView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <TextView
+        android:id="@+id/mRandomNum"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="#2bdbda"
+        android:paddingTop="100dp"
+        android:textSize="40sp" />
+
+</RelativeLayout>
