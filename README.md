@@ -1,7 +1,8 @@
 # CharView
 
 #V1.05
-Add pointer animation
+Add pointer animation.
+
 ![](https://github.com/JackWaiting/ChartView/blob/master/images/chart_jackwaiting_animation.gif)
 
 #V1.04
