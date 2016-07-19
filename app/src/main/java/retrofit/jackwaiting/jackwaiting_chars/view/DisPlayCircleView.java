@@ -6,12 +6,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
 import retrofit.jackwaiting.jackwaiting_chars.R;
 import retrofit.jackwaiting.jackwaiting_chars.util.PixelUtil;
+
 
 /**
  * Created by JackWaiting on 2016/6/30.
@@ -25,13 +28,15 @@ public class DisPlayCircleView extends View {
     private Rect mSrcRect,mDstRect;
     private Matrix mPointMatrix;
     private float mNum6VData = 0; //数据
-    private float mDegrees = 0; //指针角度
     private float mScale = 0.7f;  //缩放比例
     private float mFirstPoint = 0, mSecondPoint = 6.6f, mThirdPoint = 6.9f, mFourthPoint = 13.2f, mFifthPoint = 13.8f, mSixthPoint = 26.4f, mSevenPoint = 27.6f, mMaxPoint = 32f;  //每个区间的关键点
     private int  mFristMaxDegrees = 290,mSecondMaxDegrees = 320,mThirdMaxDegrees = 350,mFourthMaxDegrees = 20,mFifthMaxDegrees = 50,mSixthMaxDegrees = 80,mSevenMaxDegrees = 90;  //每个区间点的最大角度
     private float mFristDegrees  = 20,mSecondDegrees= 30,mThirdDegrees = 30,mFourthDegrees = 30,mFifthDegrees = 30,mSixthDegrees = 30, mSevenDegrees = 10;  //每个区间的角度范围
     private int mViewBackGround;
-
+    private float startDegrees  = 267,endDegrees = 90;
+    private float initDegrees = 267; //由起始点270减去动画的角度3
+    private float mDynamicDegrees =270; //此数据初始数据一定要大于initDegrees
+    private int mSpeed = 1;  //动画速度
     public DisPlayCircleView(Context context) {
         super(context);
         init();
@@ -53,6 +58,7 @@ public class DisPlayCircleView extends View {
         mNum6VBitmap= BitmapFactory.decodeResource(getResources(), mViewBackGround);
     }
 
+
     //初始化
     private void init() {
         Log.i("进来了","init");
@@ -72,8 +78,126 @@ public class DisPlayCircleView extends View {
         drawBitMapPointer(canvas);
     }
 
+    public void setDynamicDegrees(float mDynamicDegrees){
+        this.mDynamicDegrees =getDegrees(mDynamicDegrees);
+        myHander.sendEmptyMessage(0x00);
+    }
+
+    public void refreshPointerRotateAnimation() {
+        Log.i("我想知道这个值：", initDegrees + "," + mDynamicDegrees);
+        if((initDegrees >=startDegrees && initDegrees <360 && mDynamicDegrees>initDegrees && mDynamicDegrees>=startDegrees && mDynamicDegrees <360) ||
+                (initDegrees >=0 && initDegrees <=endDegrees && mDynamicDegrees>initDegrees && mDynamicDegrees>=0 && mDynamicDegrees <=endDegrees) ||
+                (initDegrees >=startDegrees && initDegrees <360 && mDynamicDegrees <initDegrees && mDynamicDegrees>=0 && mDynamicDegrees <=endDegrees)){
+            Log.i("我想知道这个值：", "进来了+"+initDegrees + "," + mDynamicDegrees);
+            if (mDynamicDegrees >= initDegrees && mDynamicDegrees < 360) {
+
+                if(initDegrees<=mDynamicDegrees ){
+                    initDegrees = initDegrees + mSpeed;  //没帧画的角度间隔
+                }
+                if(initDegrees>=mDynamicDegrees){
+                    initDegrees = mDynamicDegrees;
+                    setmPointMatrix(mDynamicDegrees);
+                }else{
+
+                    setmPointMatrix(initDegrees);
+                }
+
+                if(initDegrees<mDynamicDegrees){
+
+                    myHander.sendEmptyMessage(0x00);  //由于是线程处理，交给handle
+
+                }
+
+            } else if (mDynamicDegrees >= 0 && mDynamicDegrees <= endDegrees) {
+                initDegrees = initDegrees + mSpeed;
+                if (initDegrees >= 360) {
+                    initDegrees = 0;
+                }
+                if(initDegrees>=mDynamicDegrees &&initDegrees<startDegrees){
+                    initDegrees = mDynamicDegrees;
+                    setmPointMatrix(mDynamicDegrees);
+                }else{
+                    setmPointMatrix(initDegrees);
+                }
+
+                if(initDegrees>=startDegrees &&initDegrees<=360 || initDegrees<mDynamicDegrees ){
+                    myHander.sendEmptyMessage(0x00);
+                }
+            }
+        }
+        else{
+
+            Log.i("我想知道这个值：", "进来了-"+initDegrees + "," + mDynamicDegrees);
+            if (mDynamicDegrees > initDegrees && mDynamicDegrees >=startDegrees &&mDynamicDegrees <360) {
+
+                if((mDynamicDegrees<=initDegrees)||(initDegrees >=0&&initDegrees <=endDegrees) ){
+                    initDegrees = initDegrees - mSpeed;  //没帧画的角度间隔
+                }
+                if(initDegrees<=0) {
+                    initDegrees = 360;
+                }
+                if(initDegrees<=mDynamicDegrees &&initDegrees>=startDegrees){
+                    initDegrees = mDynamicDegrees;
+                    setmPointMatrix(mDynamicDegrees);
+                }else{
+
+                    setmPointMatrix(initDegrees);
+                }
+
+                if((initDegrees>0 &&initDegrees<endDegrees) ||initDegrees >mDynamicDegrees){
+
+                    myHander.sendEmptyMessage(0x00);  //由于是线程处理，交给handle
+
+                }
+            } else if ((mDynamicDegrees >= 0 && mDynamicDegrees <= endDegrees && mDynamicDegrees <initDegrees)
+                    ||(mDynamicDegrees >=startDegrees &&mDynamicDegrees <360 &&mDynamicDegrees < initDegrees )) {
+                initDegrees = initDegrees -mSpeed;
+                if(initDegrees < mDynamicDegrees &&initDegrees>=0){
+                    initDegrees = mDynamicDegrees;
+                    setmPointMatrix(mDynamicDegrees);
+                }else{
+                    setmPointMatrix(initDegrees);
+                }
+                setmPointMatrix(initDegrees);
+                if((initDegrees>0 &&initDegrees<=endDegrees && initDegrees>mDynamicDegrees)
+                        ||(initDegrees >=startDegrees &&initDegrees <360 &&mDynamicDegrees < initDegrees )){
+                    myHander.sendEmptyMessage(0x00);
+                }
+            }
+        }
+    }
+
+    private Handler myHander = new Handler(){
+
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            switch(msg.what){
+                case 0x00:
+
+                    invalidate();
+                    //系统方法  调用ondraw
+                    //myHander.sendEmptyMessageAtTime(0x00, 100);
+                    break;
+
+                default:
+                    break;
+
+            }
+        }
+
+    };
+
+    private void setmPointMatrix(float mDegrees) {
+
+        mPointMatrix = new Matrix();
+        mPointMatrix.postRotate(mDegrees, mNumPointer.getWidth() / 2, mNumPointer.getHeight() * 12 / 13); //
+        mPointMatrix.postTranslate(mRectFWidth / 2 - mNumPointer.getWidth() / 2, getHeight() / 2 - mNumPointer.getHeight() * 12 / 13);
+    }
+
     //描绘指针
     private void drawBitMapPointer(Canvas canvas) {
+        refreshPointerRotateAnimation();
         canvas.drawBitmap(mNumPointer, mPointMatrix, null);
     }
 
@@ -86,7 +210,7 @@ public class DisPlayCircleView extends View {
     //描绘背景图
     private void drawBitMapBackGround(Canvas canvas) {
         if(mNum6VBitmap!=null){
-            canvas.drawBitmap(mNum6VBitmap, mSrcRect,mDstRect, null);
+            canvas.drawBitmap(mNum6VBitmap, mSrcRect, mDstRect, null);
         }
     }
 
@@ -116,10 +240,9 @@ public class DisPlayCircleView extends View {
             return mSixthMaxDegrees - ((mSevenPoint-mNum6VData)/(mSevenPoint-mSixthPoint))*mSixthDegrees;
         }
         else if(mNum6VData>mSevenPoint &&mNum6VData<=mMaxPoint){
-            return mSevenMaxDegrees - ((mMaxPoint-mNum6VData)/(mMaxPoint-mSevenPoint))*mSevenDegrees
-                    ;
+            return mSevenMaxDegrees - ((mMaxPoint-mNum6VData)/(mMaxPoint-mSevenPoint))*mSevenDegrees;
         }
-        return 0;
+        return 90f;
     }
 
     @Override
@@ -134,12 +257,10 @@ public class DisPlayCircleView extends View {
         }
 
         mDstRect = new Rect((int)(mRectFWidth/2-mRadius),(int) (mRectFHeight/2-mRadius),(int)(mRectFWidth/2+mRadius), (int)(mRectFHeight/2+mRadius));// BitMap目标区域
-        mPointMatrix = new Matrix();
-        mDegrees= getDegrees(mNum6VData);
-        mPointMatrix.postRotate(mDegrees, mNumPointer.getWidth() / 2, mNumPointer.getHeight() * 12 / 13);
-        //mPointMatrix.postScale(mScale,mScale);
-        mPointMatrix.postTranslate(mRectFWidth/2-mNumPointer.getWidth()/2,getHeight()/2 - mNumPointer.getHeight()*12/13);
+        mDynamicDegrees= getDegrees(mNum6VData);
+
     }
 
-}
 
+
+}

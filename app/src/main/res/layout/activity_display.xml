@@ -21,4 +21,10 @@
         android:paddingTop="100dp"
         android:textSize="40sp" />
 
+    <Button
+        android:id="@+id/btn_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试按钮"/>
+
 </RelativeLayout>

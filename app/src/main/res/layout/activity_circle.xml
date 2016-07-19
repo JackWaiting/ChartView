@@ -21,6 +21,12 @@
         android:gravity="center"
         android:textColor="#2bdbda"
         android:paddingTop="200dp"
-        android:text="dasdas"
         android:textSize="25sp" />
+
+
+    <Button
+        android:id="@+id/btn_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试按钮"/>
 </RelativeLayout>
