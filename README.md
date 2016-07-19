@@ -2,7 +2,7 @@
 
 #V1.05
 Add pointer animation
-![](https://github.com/JackWaiting/ChartView/blob/master/images/char_jackwaiting_animation.mp4)
+![](https://github.com/JackWaiting/ChartView/blob/master/images/chart_jackwaiting_animation.gif)
 
 #V1.04
 Describe：Add RuleCircleView into the ChartView project source code.
